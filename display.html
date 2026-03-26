@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greeter Display — SLU J&T EXPRESS</title>
+    <link rel="stylesheet" href="vendor/fonts/fonts.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #05030f;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Ambient gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 30%, rgba(108, 99, 255, 0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 70%, rgba(13, 251, 156, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .brand {
+            position: fixed;
+            top: 28px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main card */
+        .card {
+            text-align: center;
+            padding: 56px 72px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            min-width: 520px;
+            max-width: 90vw;
+            position: relative;
+            transition: border-color 0.5s, box-shadow 0.5s;
+        }
+
+        .card.active {
+            border-color: rgba(13, 251, 156, 0.35);
+            box-shadow: 0 0 60px rgba(13, 251, 156, 0.12), 0 0 0 1px rgba(13, 251, 156, 0.08);
+        }
+
+        /* Idle state */
+        .idle-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .idle-text {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 0.05em;
+        }
+
+        /* Guest info */
+        .checkin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(13, 251, 156, 0.12);
+            border: 1px solid rgba(13, 251, 156, 0.3);
+            color: #0dfb9c;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+        }
+
+        .guest-name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2.8rem, 6vw, 5rem);
+            line-height: 1.05;
+            color: #fff;
+            margin-bottom: 16px;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.15);
+        }
+
+        .guest-dept {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.45);
+            margin-bottom: 36px;
+            font-weight: 400;
+        }
+
+        .table-number {
+            display: inline-block;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: #0dfb9c;
+            text-shadow: 0 0 40px rgba(13, 251, 156, 0.5);
+            line-height: 1;
+        }
+
+        .table-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(13, 251, 156, 0.5);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* Pulse ring on new arrival */
+        @keyframes ping {
+            0% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+        }
+
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid rgba(13, 251, 156, 0.5);
+            animation: ping 1.2s ease-out 3;
+            pointer-events: none;
+        }
+
+        /* Slide-in animation */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .guest-info {
+            animation: slideUp 0.45s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        /* Status dot bottom */
+        .status-bar {
+            position: fixed;
+            bottom: 24px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #0dfb9c;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.2
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="brand">SLU J&T EXPRESS &mdash; Greeter Display</div>
+
+    <div class="card" id="main-card">
+        <!-- Idle state -->
+        <div id="idle-state">
+            <div class="idle-icon">🎫</div>
+            <div class="idle-text">Waiting for next guest…</div>
+        </div>
+        <!-- Guest info (hidden until scan) -->
+        <div id="guest-state" style="display:none;" class="guest-info">
+            <div class="checkin-badge">✓ Checked In</div>
+            <div class="guest-name" id="d-name">—</div>
+            <div class="guest-dept" id="d-dept"></div>
+            <div class="table-label">Table Number</div>
+            <div class="table-number" id="d-table">—</div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="dot"></div>
+        <span id="status-text">Connecting…</span>
+    </div>
+
+    <script>
+        let lastId = null;
+        let resetTimer = null;
+
+        async function poll() {
+            try {
+                const res = await fetch('/api/registrations');
+                const data = await res.json();
+                const list = data.registrations || data || [];
+
+                document.getElementById('status-text').textContent =
+                    `Live · ${list.length} checked in`;
+
+                if (list.length === 0) return;
+
+                const latest = list[0]; // newest first
+                if (latest.id === lastId) return; // no change
+                lastId = latest.id;
+
+                showGuest(latest);
+            } catch (e) {
+                document.getElementById('status-text').textContent = '⚠️ Server unreachable';
+            }
+        }
+
+        function showGuest(g) {
+            const card = document.getElementById('main-card');
+            const idle = document.getElementById('idle-state');
+            const info = document.getElementById('guest-state');
+
+            document.getElementById('d-name').textContent = g.scanData || 'Guest';
+            document.getElementById('d-dept').textContent = g.department || '';
+            document.getElementById('d-table').textContent = g.tableNo || '—';
+
+            idle.style.display = 'none';
+            info.style.display = 'block';
+            // Restart animation
+            info.style.animation = 'none';
+            requestAnimationFrame(() => { info.style.animation = ''; });
+
+            card.classList.add('active');
+
+            // Add pulse ring
+            const existing = card.querySelector('.pulse-ring');
+            if (existing) existing.remove();
+            const ring = document.createElement('div');
+            ring.className = 'pulse-ring';
+            card.appendChild(ring);
+            setTimeout(() => ring.remove(), 4000);
+
+            // Auto-reset to idle after 12 seconds
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(() => {
+                info.style.display = 'none';
+                idle.style.display = 'block';
+                card.classList.remove('active');
+            }, 12000);
+        }
+
+        // Poll every 2 seconds
+        poll();
+        setInterval(poll, 2000);
+    </script>
+</body>
+
+</html>

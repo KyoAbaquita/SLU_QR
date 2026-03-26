@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#05050A" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Slu Registration System</title>
+    <meta name="description"
+        content="Scan attendee QR codes to auto-assign table numbers and export registrations to Excel." />
+
+    <!-- QR Scanner (Local for Offline) -->
+    <script src="vendor/js/html5-qrcode.min.js"></script>
+    <!-- SheetJS with styling for Excel export (Local for Offline) -->
+    <script src="vendor/js/xlsx.bundle.js"></script>
+    <!-- QRCode.js for QR Generation (Local for Offline) -->
+    <script src="vendor/js/qrcode.min.js"></script>
+    <!-- Google Fonts (Local for Offline) -->
+    <link rel="stylesheet" href="vendor/fonts/fonts.css" />
+
+    <!-- Bootstrap 5.3 (Local for Offline) -->
+    <link rel="stylesheet" href="vendor/css/bootstrap.min.css" />
+    
+    <!-- CSS Modules -->
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/scanner.css" />
+    <link rel="stylesheet" href="css/registration.css" />
+    <link rel="stylesheet" href="css/modals.css" />
+    <link rel="stylesheet" href="css/analytics.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="css/mobile-ux.css" />
+    <link rel="stylesheet" href="css/print.css" />
+</head>
+
+<body>
+
+    <div class="page-wrap">
+
+        <!-- ── Top Bar ── -->
+        <header class="navbar navbar-expand-lg top-bar container-fluid">
+            <!-- Brand -->
+            <div class="brand">
+                <div class="brand-icon">
+                    <img src="assets/logo.jpg" alt="Logo" class="brand-logo-img" />
+                </div>
+                <div class="brand-text">
+                    <h1>SLU J&T EXPRESS</h1>
+                    <p>Our Journey, Our Future</p>
+                </div>
+                <div id="db-status" class="d-none d-sm-inline-block"
+                    style="font-size:0.65rem;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,0.07);color:var(--muted);margin-left:6px;white-space:nowrap;">
+                    ⏳ Connecting…</div>
+            </div>
+
+            <!-- Hamburger Button -->
+            <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#topActionsMenu" aria-controls="topActionsMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Actions (Collapsed on Mobile) -->
+            <div class="collapse navbar-collapse" id="topActionsMenu">
+                <div class="top-actions ms-auto mt-3 mt-lg-0">
+                    <button class="btn btn-ghost"
+                        onclick="document.getElementById('analytics-modal').classList.add('show')">
+                        📊 <span class="btn-label">Analytics</span>
+                    </button>
+                    <button class="btn btn-ghost" onclick="openGuestModal()">
+                        👥 <span class="btn-label">Guests &amp; QR</span>
+                    </button>
+                    <button class="btn btn-success" id="export-btn" onclick="exportExcel()">
+                        📥 <span class="btn-label">Export</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="clearAll()">
+                        🗑️ <span class="btn-label">Clear All</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Main Grid ── -->
+        <main class="main-content container-fluid">
+            <div class="row g-2">
+
+                <!-- Scanner Card Column -->
+                <div class="col-12 col-lg-4">
+                    <div class="card scanner-card">
+                    <div class="card-header scanner-header">
+                        <div class="card-title">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M23 5h-6v6h6V5zm-6 8h1.5v1.5H17V13zm1.5 1.5H20V16h-1.5v-1.5zM20 13h1.5v1.5H20V13zm-3 3h1.5v1.5H17V16zm1.5 1.5H20V19h-1.5v-1.5zM20 16h1.5v1.5H20V16zm1.5 1.5H23V19h-1.5v-1.5zM23 13h-1.5v1.5H23V13zm-1.5-1.5v1.5h-1.5V11.5H21.5zm0 7.5H23v1.5h-1.5V19zm0-6H23v1.5h-1.5V13z" />
+                            </svg>
+                            Live Scanner
+                        </div>
+
+                        <button class="btn btn-ghost" id="toggle-btn" onclick="toggleScanner()"
+                            style="padding:5px 12px; font-size:0.75rem; min-height:30px;">
+                            Pause
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="scanner-view-wrap">
+                            <!-- QR library renders inside here -->
+                            <div id="qr-reader"></div>
+
+                            <!-- Custom overlay: laser + corners (library can't touch these) -->
+                            <div class="scanner-overlay" id="scanner-overlay" aria-hidden="true">
+                                <!-- Centered white corner frame + red laser inside it -->
+                                <div class="scan-frame">
+                                    <!-- Red laser sweep line (constrained within the frame) -->
+                                    <div class="scanner-laser" id="laser"></div>
+                                    <!-- White corner brackets -->
+                                    <div class="scan-corner tl"></div>
+                                    <div class="scan-corner tr"></div>
+                                    <div class="scan-corner bl"></div>
+                                    <div class="scan-corner br"></div>
+                                </div>
+                            </div>
+
+                            <!-- Status pill — always below the video -->
+                            <div class="scanner-status idle" id="scan-status">
+                                <div class="pulse" id="pulse-dot"></div>
+                                <span id="status-text">Initialising…</span>
+                            </div>
+                        </div>
+
+                        <!-- Camera Selector -->
+                        <div class="cam-select-wrap"
+                            style="margin-top: 14px; display:flex; align-items:center; gap:8px;">
+                            <label for="cam-select"
+                                style="font-size:0.72rem; color:var(--muted); white-space:nowrap; display:flex; align-items:center; gap:4px; flex-shrink:0;">
+                                📷 <span>Camera</span>
+                            </label>
+                            <select id="cam-select" onchange="switchCamera(this.value)"
+                                style="flex:1; min-height:36px; padding:6px 10px;">
+                                <option value="">Detecting cameras…</option>
+                            </select>
+                            <button onclick="refreshCameras()" title="Refresh camera list" id="refresh-cam-btn"
+                                class="cam-refresh-btn">
+                                <svg id="refresh-cam-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M23 4v6h-6" />
+                                    <path d="M1 20v-6h6" />
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div> <!-- /card-body -->
+                </div> <!-- /card -->
+            </div> <!-- /col-lg-4 -->
+
+            <!-- Registration Table Column -->
+            <div class="col-12 col-lg-8">
+                    <div class="card table-card">
+                        <div class="card-header" style="flex-wrap:wrap;gap:8px;">
+                            <div class="card-title">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z" />
+                                </svg>
+                                Registration Log
+                            </div>
+                            <!-- Search bar inline beside the title -->
+                            <input type="text" id="reg-search" class="form-control"
+                                placeholder="🔍 Search name, dept, table..." oninput="filterRegTable()"
+                                style="flex:1;min-width:160px;max-width:460px;font-size:0.8rem;padding:5px 10px;" />
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <button class="btn btn-ghost" style="font-size:0.75rem;padding:4px 10px;"
+                                    onclick="showAbsentModal()" title="View guests who haven't checked in">
+                                    📋 Absent List
+                                </button>
+                                <span style="font-size:0.78rem;color:var(--muted);" id="record-count">0 records</span>
+                            </div>
+                        </div>
+
+                        <div class="tbl-wrap">
+                            <table id="reg-table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center;width:40px;">#</th>
+                                        <th>Full Name</th>
+                                        <th>Department</th>
+                                        <th>Job Title</th>
+                                        <th style="text-align: center;">Table</th>
+                                        <th style="text-align: center;">Date &amp; Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reg-tbody">
+                                    <tr id="empty-row">
+                                        <td colspan="6">
+                                            <div class="empty-state">
+                                                <svg viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-7 12H8v-2h4v2zm4-4H8v-2h8v2zm0-4H8V5h8v2z" />
+                                                </svg>
+                                                <p>No registrations yet.<br />Point a QR code at the camera to begin.
+                                                </p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div> <!-- /tbl-wrap -->
+                    </div> <!-- /table-card -->
+
+                    <!-- Analytics have been moved to Analytics Dashboard modal -->
+                </div> <!-- /col -->
+
+            </div><!-- /row -->
+        </main><!-- /main-content -->
+    </div><!-- /page-wrap -->
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Success Output Modal -->
+    <div id="scan-modal" class="modal-overlay">
+        <div class="modal scan-success-modal">
+            <div class="modal-body text-center">
+                <!-- Glow ring with checkmark -->
+                <div class="scan-icon">✓</div>
+                <!-- REGISTERED badge below the ring -->
+                <div class="scan-registered-badge">REGISTERED</div>
+                <h2 id="sm-table" class="sm-table">Table 1</h2>
+                <h3 id="sm-name" class="sm-name">John Doe</h3>
+                <p id="sm-dept" class="sm-meta">IT Department</p>
+                <p id="sm-job" class="sm-meta">Software Engineer</p>
+                <p id="sm-raw" class="sm-meta" style="display:none;font-family:monospace;margin-top:10px;"></p>
+                <button class="btn scan-ok-btn" onclick="closeScanModal()">OK &amp; Next</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ── Custom Confirm Dialog ──────────────────────── -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal confirm-modal">
+            <div class="modal-body text-center">
+                <div class="confirm-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none"
+                        stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                </div>
+                <h3 id="confirm-title" class="confirm-title">Are you sure?</h3>
+                <p id="confirm-message" class="confirm-message">This action cannot be undone.</p>
+                <div class="confirm-actions">
+                    <button class="btn confirm-cancel-btn" onclick="confirmDialogResolve(false)">Cancel</button>
+                    <button class="btn confirm-ok-btn" onclick="confirmDialogResolve(true)">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div id="analytics-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 900px; width: 96vw;">
+            <div class="modal-header">
+                <h3>📊 Live Analytics Dashboard</h3>
+                <button class="btn-close"
+                    onclick="document.getElementById('analytics-modal').classList.remove('show')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- TOP: Overall Attendance -->
+                <div style="margin-bottom: 24px;">
+                    <div class="card"
+                        style="padding: 24px; border: none; background: rgba(0, 0, 0, 0.15); box-shadow: inset 0 2px 20px rgba(0,0,0,0.5);">
+                        <div class="card-title"
+                            style="margin-bottom: 20px; font-size: 1.05rem; font-family: 'Outfit', sans-serif; font-weight: 700; color: #fff; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" style="fill: var(--accent2); width: 24px; height: 24px;">
+                                <path
+                                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+                            </svg>
+                            OVERALL ATTENDANCE SUMMARY
+                        </div>
+
+                        <div class="analytics-top-grid"
+                            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                            <!-- Arrival Rate Box -->
+                            <div class="analytics-card"
+                                style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);">
+                                <div
+                                    style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom: 12px;">
+                                    <div class="lbl"
+                                        style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">
+                                        Arrival Rate</div>
+                                    <div class="num" id="stat-percent"
+                                        style="font-size: 2rem; color: var(--accent); font-family: 'Outfit', sans-serif; font-weight: 800; line-height: 1; text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);">
+                                        0%</div>
+                                </div>
+                                <div class="progress-container"
+                                    style="height: 8px; background: rgba(255, 255, 255, 0.04); border-radius: 4px; overflow: hidden;">
+                                    <div class="progress-bar" id="stat-progress"
+                                        style="height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent)); width: 0%; transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Status Breakdown Box -->
+                            <div class="analytics-card"
+                                style="background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 20px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);">
+                                <div class="lbl"
+                                    style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 12px;">
+                                    Guest Presence Status</div>
+
+                                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        <span class="status-badge"
+                                            style="display:inline-block; width:fit-content; background: rgba(13, 251, 156, 0.1); color: var(--success); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; border: 1px solid rgba(13, 251, 156, 0.2); margin-bottom:4px;">PRESENT</span>
+                                        <span
+                                            style="font-size:1.6rem; font-weight:800; font-family: 'Outfit', sans-serif;"
+                                            id="stat-present-count">0</span>
+                                    </div>
+
+                                    <div style="display:flex; flex-direction:column; gap:4px;">
+                                        <span class="status-badge"
+                                            style="display:inline-block; width:fit-content; background: rgba(255, 51, 102, 0.1); color: var(--danger); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 800; border: 1px solid rgba(255, 51, 102, 0.2); margin-bottom:4px;">MISSING</span>
+                                        <span
+                                            style="font-size:1.6rem; font-weight:800; font-family: 'Outfit', sans-serif; color: var(--muted);"
+                                            id="stat-absent-count">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTTOM: Department Breakdown (Converted to 4-column grid) -->
+                <div id="dept-breakdown">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+                        <svg viewBox="0 0 24 24"
+                            style="width:20px;height:20px;fill:var(--accent2);flex-shrink:0;">
+                            <path d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm13 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" />
+                        </svg>
+                        <span
+                            style="font-size:0.9rem;color:#fff;text-transform:uppercase;font-weight:800;letter-spacing:0.1em;">Department
+                            Leaderboard Breakdown</span>
+                        <div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div>
+                    </div>
+
+                    <div id="dept-breakdown-list"
+                        style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:12px; max-height:450px; overflow-y:auto; padding: 4px 5px 15px 0;">
+                        <!-- JS items will render here in a 4-column-ish grid -->
+                        <div style="grid-column: 1/-1; font-size:0.85rem; color:var(--muted); text-align:center; padding:30px;">
+                            No guest data imported yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 16px 20px; border-top: 1px solid var(--border); text-align: right;">
+                <button class="btn btn-ghost"
+                    onclick="document.getElementById('analytics-modal').classList.remove('show')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guest Modal -->
+    <div id="guest-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 1050px; width: 96vw;">
+            <div class="modal-header">
+                <h3>Guest List <span id="guest-count-badge" style="font-size:0.65em;background:rgba(255,255,255,0.1);padding:4px 8px;border-radius:12px;margin-left:8px;vertical-align:middle;color:var(--muted);font-weight:600;"></span></h3>
+                <button class="btn-close" onclick="closeGuestModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 10px;">
+                    <p class="guest-hint">Import Excel with <b>Name, Department, Job Title, Table Number, Email</b> columns.</p>
+                    <div class="guest-actions">
+                        <input type="file" id="guest-file" accept=".xlsx, .xls, .csv" style="display:none;"
+                            onchange="handleGuestUpload(event)">
+
+                        <button class="btn btn-ghost" onclick="document.getElementById('guest-file').click()">
+                            📁 Import<span class="desktop-only"> Excel</span>
+                        </button>
+
+                        <button class="btn btn-primary" onclick="generateQRCodes()">
+                            🔲 <span class="mobile-only">Gen QRs</span><span class="desktop-only">Generate QRs</span>
+                        </button>
+
+                        <button class="btn btn-warning" onclick="sendQREmails()"
+                            style="background-color: #f39c12; color: white;">
+                            📧 Send<span class="desktop-only"> QR Emails</span>
+                        </button>
+
+                        <button class="btn btn-danger" onclick="clearGuests()" style="margin-left:auto;">
+                            🗑️ Clear<span class="desktop-only"> All</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-between" style="margin-bottom: 20px;">
+                    <div style="display:flex;gap:10px;flex:1;">
+                        <input type="text" id="guest-search" class="form-control" placeholder="Search by name..."
+                            oninput="renderGuestTable()" />
+                        <select id="guest-dept-filter" class="form-control" onchange="renderGuestTable()">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tbl-wrap">
+                    <table id="guest-table" style="table-layout:fixed;width:100%;">
+                        <colgroup>
+                            <col style="width:20%"> <!-- Name -->
+                            <col style="width:16%"> <!-- Dept -->
+                            <col style="width:18%"> <!-- Job Title -->
+                            <col style="width:8%"> <!-- Table -->
+                            <col style="width:26%"> <!-- Email -->
+                            <col style="width:12%"> <!-- Status -->
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Dept</th>
+                                <th>Job Title</th>
+                                <th style="text-align:center;">Table</th>
+                                <th>Email</th>
+                                <th style="text-align:center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="guest-tbody">
+                            <tr id="guest-empty-row">
+                                <td colspan="6" style="text-align:center;color:var(--muted);padding:30px;">
+                                    No guests loaded.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Duplicate Scan Warning Modal -->
+    <div id="duplicate-modal" class="modal-overlay">
+        <div class="modal duplicate-warn-modal">
+            <div class="modal-body text-center">
+                <div class="dup-icon">⚠️</div>
+                <div class="dup-badge">ALREADY SCANNED</div>
+                <h3 id="dup-name" class="dup-name">Guest Name</h3>
+                <p class="dup-message">This guest has already been registered and checked in.</p>
+                <button class="btn dup-ok-btn" onclick="closeDuplicateModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Absent List Modal ──────────────────────────────── -->
+    <div id="absent-modal" class="modal-overlay">
+        <div class="modal" style="max-width: 780px;">
+            <div class="modal-header">
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:1rem;font-weight:700;color:#fff;">📋 Absent Guest List</span>
+                    <span id="absent-count-badge" style="
+                        background: rgba(255,51,102,0.15);
+                        border: 1px solid rgba(255,51,102,0.35);
+                        color: var(--danger);
+                        font-size: 0.7rem;
+                        font-weight: 800;
+                        padding: 3px 10px;
+                        border-radius: 20px;
+                        letter-spacing: 0.05em;
+                    ">0 absent</span>
+                </div>
+                <button class="btn-close" onclick="closeAbsentModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:16px 20px;">
+                <!-- Search + Filter + Export row -->
+                <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+                    <input type="text" id="absent-search" class="form-control"
+                        placeholder="🔍 Search name, department, table..." oninput="filterAbsentTable()"
+                        style="flex:2;min-width:160px;font-size:0.82rem;padding:8px 12px;" />
+                    <select id="absent-dept-filter" class="form-control" onchange="filterAbsentTable()"
+                        style="flex:1;min-width:140px;font-size:0.82rem;padding:8px 12px;">
+                        <option value="">All Departments</option>
+                    </select>
+                    <button class="btn btn-success" onclick="exportAbsentList()"
+                        style="font-size:0.8rem;padding:8px 16px;white-space:nowrap;">
+                        📥 Export Excel
+                    </button>
+                </div>
+
+                <!-- Table -->
+                <div class="tbl-wrap" style="max-height:calc(60vh - 80px);">
+                    <table id="absent-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center;width:40px;">#</th>
+                                <th>Full Name</th>
+                                <th>Department</th>
+                                <th>Job Title</th>
+                                <th style="text-align:center;">Table</th>
+                            </tr>
+                        </thead>
+                        <tbody id="absent-tbody">
+                            <tr id="absent-empty-row">
+                                <td colspan="5" style="text-align:center;color:var(--muted);padding:40px;">
+                                    No absent guests.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Container (Hidden ordinarily) -->
+    <div id="print-container"></div>
+
+    <!-- ── Walk-In Registration Modal ──────────────────── -->
+    <div id="walkin-modal" class="modal-overlay" style="z-index:9500; align-items:center;">
+        <div class="modal" style="max-width:420px;">
+            <div class="modal-header">
+                <h3>🚶 Walk-In Guest</h3>
+                <button class="btn-close" onclick="cancelWalkIn()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.85rem;color:var(--muted);margin-bottom:18px;">
+                    This QR code is not on the guest list. Enter guest details to register them as a walk-in.
+                </p>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div>
+                        <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:6px;">Full Name
+                            <span style="color:var(--danger)">*</span></label>
+                        <input id="walkin-name" class="form-control" type="text" placeholder="e.g. Juan Dela Cruz"
+                            autocomplete="off" />
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:6px;">Department
+                            / Company</label>
+                        <input id="walkin-dept" class="form-control" type="text" placeholder="e.g. Operations"
+                            autocomplete="off" />
+                    </div>
+                    <div>
+                        <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:6px;">Table
+                            Number</label>
+                        <input id="walkin-table" class="form-control" type="text" placeholder="e.g. 5"
+                            autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+            <div
+                style="padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;">
+                <button class="btn btn-ghost" onclick="cancelWalkIn()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmWalkIn()">✅ Register</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Table Capacity Tracker Modal ────────────────── -->
+    <div id="table-tracker-modal" class="modal-overlay" style="align-items:center;">
+        <div class="modal" style="max-width:680px;width:96vw;">
+            <div class="modal-header">
+                <h3>🪑 Table Capacity</h3>
+                <button class="btn-close"
+                    onclick="document.getElementById('table-tracker-modal').classList.remove('show')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:0.82rem;color:var(--muted);margin-bottom:16px;">
+                    Based on your imported guest list. Shows how many seats are filled vs. total assigned per table.
+                </p>
+                <div id="table-tracker-grid"
+                    style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;">
+                    <div style="color:var(--muted);font-size:0.85rem;text-align:center;padding:20px;grid-column:1/-1;">
+                        Import guests to see table data.</div>
+                </div>
+            </div>
+            <div style="padding:16px 20px;border-top:1px solid var(--border);text-align:right;">
+                <button class="btn btn-ghost"
+                    onclick="document.getElementById('table-tracker-modal').classList.remove('show')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Presentation Mode Exit Button ───────────────── -->
+    <button id="exit-presentation-btn" onclick="togglePresentationMode()" style="display:none;">
+        ✕ Exit Focus Mode
+    </button>
+
+    <!-- Bootstrap 5.3 JS Bundle (Local for Offline) -->
+    <script src="vendor/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/state.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/scanner.js"></script>
+    <script src="js/actions.js"></script>
+    <script src="js/guests.js"></script>
+    <script src="js/mobile-ux.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
