@@ -1,0 +1,24 @@
+/* ─── Layout ────────────────────────────────────── */
+.page-wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Inner content area, below sticky header on mobile */
+.main-content {
+    padding: 8px 14px 0;
+}
+
+@media (min-width: 600px) {
+    .main-content {
+        padding: 0 18px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        padding: 0 28px;
+    }
+}

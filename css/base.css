@@ -1,0 +1,51 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    background-image: url('../assets/SLU  Anniv Mats_page-0002.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: var(--text);
+    min-height: 100vh;
+    /* Mobile-first: zero side padding — cards go edge-to-edge */
+    padding: 0 0 60px;
+    overflow-x: hidden;
+
+    /* Hide scrollbar for the entire system */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
+}
+
+@media (min-width: 600px) {
+    body {
+        padding: 20px 18px 40px;
+    }
+}
+
+@media (min-width: 1024px) {
+    body {
+        padding: 24px 28px 40px;
+    }
+}
+
+/* ─── Background dark overlay ─────────────────── */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 15, 0.72);
+    pointer-events: none;
+    z-index: 0;
+}

@@ -1,0 +1,14 @@
+/* ─── Tokens ───────────────────────────────────── */
+:root {
+    --bg: #05050A;
+    /* Deepest indigo black */
+    --surface: rgba(18, 19, 36, 0.65);
+    --surface2: rgba(28, 30, 56, 0.75);
+    --border: rgba(100, 110, 255, 0.15);
+    --accent: #00F0FF;
+    --success: #0dfb9c;
+    --danger: #FF3366;
+    --text: #F8F9FA;
+    --muted: #8E9BB0;
+    --radius: 20px;
+}

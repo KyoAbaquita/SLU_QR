@@ -1,0 +1,318 @@
+/* ─── Presentation / Focus Mode ──────────────────────── */
+body.presentation-mode .header,
+body.presentation-mode #reg-log-col,
+body.presentation-mode .top-actions {
+    display: none !important;
+}
+
+body.presentation-mode .main-content {
+    padding: 0;
+    height: 100vh;
+}
+
+body.presentation-mode .grid {
+    grid-template-columns: 1fr !important;
+    height: 100vh;
+    padding: 0;
+    gap: 0;
+}
+
+body.presentation-mode .scanner-card {
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+}
+
+body.presentation-mode #qr-reader {
+    flex: 1;
+}
+
+body.presentation-mode #qr-reader video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+}
+
+body.presentation-mode #scan-modal .modal {
+    font-size: 1.4em;
+}
+
+body.presentation-mode #sm-name {
+    font-size: 2.2rem !important;
+}
+
+body.presentation-mode #sm-table {
+    font-size: 2rem !important;
+}
+
+/* Exit Focus Mode button — fixed bottom-right */
+#exit-presentation-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 99999;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: background 0.2s, transform 0.15s;
+    font-family: 'Inter', sans-serif;
+}
+
+#exit-presentation-btn:hover {
+    background: rgba(255, 80, 80, 0.3);
+    border-color: rgba(255, 80, 80, 0.5);
+    transform: translateY(-2px);
+}
+
+/* ─── Modern Mobile-First UI Components (Restored) ─── */
+
+/* Search Input */
+.search-input {
+    flex: 1;
+    min-width: 160px;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+}
+
+@media (min-width: 768px) {
+    .search-input {
+        max-width: 460px;
+    }
+}
+
+.table-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+@media (min-width: 768px) {
+    .table-actions-right {
+        width: auto;
+        justify-content: flex-end;
+    }
+}
+
+.table-actions-right span {
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+/* Analytics Dashboard */
+.analytics-modal {
+    max-width: 900px !important;
+}
+
+.analytics-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .analytics-layout {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 18px;
+    }
+}
+
+.attendance-section {
+    flex: 1;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .attendance-section {
+        min-width: 260px;
+    }
+}
+
+.analytics-overview-card {
+    padding: 24px;
+    border: none !important;
+    background: rgba(0, 0, 0, 0.15) !important;
+    box-shadow: inset 0 2px 20px rgba(0, 0, 0, 0.5) !important;
+    height: 100%;
+}
+
+.analytics-card-title {
+    margin-bottom: 20px !important;
+    font-size: 1.05rem !important;
+    color: #fff !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.analytics-card-title svg {
+    fill: var(--accent2);
+    width: 20px;
+    height: 20px;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+@media (min-width: 480px) {
+    .analytics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.analytics-box {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 12px;
+}
+
+.stat-num {
+    font-size: 1.6rem;
+    color: var(--accent);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+.stat-lbl {
+    font-size: 0.70rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.stat-lbl.mb-8 {
+    margin-bottom: 8px;
+}
+
+.stat-progress-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.stat-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    width: 0%;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.status-row-flex {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.status-row-flex:last-child {
+    margin-bottom: 0;
+}
+
+.status-badge-success {
+    background: rgba(13, 251, 156, 0.1);
+    color: var(--success);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border: 1px solid rgba(13, 251, 156, 0.2);
+}
+
+.status-badge-danger {
+    background: rgba(255, 51, 102, 0.1);
+    color: var(--danger);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border: 1px solid rgba(255, 51, 102, 0.2);
+}
+
+.status-row-flex span:last-child {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Dept Breakdown */
+.dept-section {
+    flex: 1;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .dept-section {
+        min-width: 260px;
+    }
+}
+
+.dept-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.dept-header svg {
+    width: 14px;
+    height: 14px;
+    fill: var(--accent2);
+    flex-shrink: 0;
+}
+
+.dept-lbl {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.dept-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#dept-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.empty-dept-msg {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+    padding: 12px;
+}

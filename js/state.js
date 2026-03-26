@@ -1,0 +1,10 @@
+const STORAGE_KEY = 'qr_registrations';
+        const GUEST_KEY = 'qr_guests';
+        let registrations = [];
+        let guests = [];
+        let tableCounter = 0;
+        let scannerActive = true;
+        let scanner = null;
+        let lastScanned = '';
+        let lastScanTime = 0;
+        const COOLDOWN_MS = 3000; // prevent duplicate scans within 3 s

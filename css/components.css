@@ -1,0 +1,234 @@
+/* ─── Buttons ────────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: transform .15s, box-shadow .15s, filter .15s;
+    white-space: nowrap;
+}
+
+.btn:active {
+    transform: scale(.95);
+    filter: brightness(.9);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--accent2), #4facfe);
+    /* Purple to Blue */
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(13, 251, 156, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(13, 251, 156, 0.5);
+}
+
+.btn-ghost {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger {
+    background: rgba(255, 51, 102, 0.15);
+    border: 1px solid rgba(255, 51, 102, 0.3);
+    color: var(--danger);
+}
+
+.btn-danger:hover {
+    background: rgba(255, 51, 102, 0.25);
+    box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+}
+
+/* ─── Mobile-first grid ─────────────────────── */
+/* ─── Mobile-first grid (REPLACED BY BOOTSTRAP) ─────────────── 
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    align-items: start;
+}
+
+@media (min-width: 600px) { ... }
+*/
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    /* Mobile: square edges, full-width like tiles */
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    box-shadow: none;
+    overflow: hidden;
+    animation: fadeUp .5s ease both;
+}
+
+@media (min-width: 600px) {
+    .card {
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 600px) {
+    .card-header {
+        padding: 18px 22px;
+        gap: 12px;
+    }
+}
+
+.card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.card-title svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--accent2);
+}
+
+.card-body {
+    padding: 14px 16px;
+}
+
+@media (min-width: 600px) {
+    .card-body {
+        padding: 22px;
+    }
+}
+
+/* db-status: hidden on mobile to save space */
+#db-status {
+    display: none !important;
+}
+
+@media (min-width: 600px) {
+    #db-status {
+        display: inline-block !important;
+    }
+}
+
+/* ─── Form Controls (Inputs / Selects) ────────── */
+.form-control {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text) !important;
+    padding: 10px 14px;
+    font-family: 'Inter' !important;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all .2s ease;
+    width: 100%;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.form-control:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.2);
+}
+
+.form-control:hover {
+    border-color: rgba(100, 110, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Webkit Autofill fix (prevent white/yellow background) ─── */
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover, 
+.form-control:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0px 1000px #1e1e2d inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.form-control::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+}
+
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238888aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+    /* Prevent long dropdown options from forcing width expansion */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+select.form-control option {
+    background-color: #1e1e2d;
+    /* Dark dropdown background */
+    color: #f0f0ff;
+    padding: 10px;
+}

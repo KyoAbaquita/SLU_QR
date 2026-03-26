@@ -1,0 +1,451 @@
+/* ─── Mobile-First Responsive Fixes ─────────────────────── */
+
+/* ── Enhancements for Web / All Screens ── */
+.btn {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+#qr-reader {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+.scanner-status {
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Small Mobile: max-width 480px ─────────────────────── */
+@media (max-width: 480px) {
+
+    /* Body */
+    body {
+        padding: 0 0 70px;
+        font-size: 13px;
+    }
+
+    /* Buttons (global – not nav buttons, those live in header.css) */
+    .btn {
+        font-size: 0.78rem;
+        padding: 8px 12px;
+        gap: 5px;
+        border-radius: 8px;
+    }
+
+    /* Cards */
+    .card {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .card-header {
+        padding: 8px 12px;
+        gap: 6px;
+    }
+
+    .card-title {
+        font-size: 0.72rem;
+        gap: 5px;
+    }
+
+    .card-title svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .card-body {
+        padding: 10px 12px;
+    }
+
+    /* Stats Row */
+    .stats-row {
+        gap: 6px;
+        padding: 0 10px;
+        margin-top: 10px;
+    }
+
+    .stat-box {
+        padding: 8px 6px;
+        border-radius: 8px;
+    }
+
+    .stat-box .num {
+        font-size: 1.1rem;
+    }
+
+    .stat-box .lbl {
+        font-size: 0.58rem;
+    }
+
+    /* Table */
+    table {
+        font-size: 0.72rem;
+    }
+
+    th {
+        padding: 7px 8px;
+        font-size: 0.6rem;
+    }
+
+    td {
+        padding: 7px 8px;
+        font-size: 0.72rem;
+    }
+
+    .table-no-badge {
+        padding: 3px 8px;
+        font-size: 0.7rem;
+    }
+
+    .tbl-wrap {
+        height: 260px;
+        border-radius: 8px;
+    }
+
+    /* Scanner */
+    #qr-reader {
+        aspect-ratio: 4 / 3;
+        max-height: 55vh;
+    }
+
+    .scanner-status {
+        font-size: 0.65rem;
+        padding: 4px 10px;
+        bottom: 4px;
+    }
+
+    .cam-select-wrap {
+        margin-top: 8px;
+        gap: 6px;
+    }
+
+    .cam-select-wrap label {
+        font-size: 0.65rem;
+    }
+
+    #cam-select {
+        font-size: 0.72rem;
+        padding: 5px 8px;
+    }
+
+    .cam-refresh-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    /* Modals */
+    .modal {
+        max-height: 95vh;
+        border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .modal-header {
+        padding: 10px 14px;
+    }
+
+    .modal-header h3 {
+        font-size: 0.88rem;
+    }
+
+    .modal-body {
+        padding: 12px 14px;
+    }
+
+    .modal-footer {
+        padding: 10px 14px;
+    }
+
+    /* Scan Success Modal */
+    .scan-success-modal {
+        padding: 20px 16px 16px;
+    }
+
+    .scan-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .scan-registered-badge {
+        font-size: 0.7rem;
+        padding: 5px 16px;
+        margin-bottom: 10px;
+        letter-spacing: 0.16em;
+    }
+
+    .sm-table {
+        font-size: 1.6rem;
+        margin-bottom: 3px;
+    }
+
+    .sm-name {
+        font-size: 1rem;
+        margin-bottom: 3px;
+    }
+
+    .sm-meta {
+        font-size: 0.72rem;
+    }
+
+    .scan-ok-btn {
+        margin-top: 14px;
+        padding: 10px 16px;
+        font-size: 0.82rem;
+    }
+
+    /* Duplicate Modal */
+    .duplicate-warn-modal {
+        padding: 20px 16px 18px;
+    }
+
+    .dup-icon {
+        font-size: 2.4rem;
+        margin-bottom: 6px;
+    }
+
+    .dup-badge {
+        font-size: 0.65rem;
+        padding: 4px 14px;
+        margin-bottom: 10px;
+    }
+
+    .dup-name {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .dup-message {
+        font-size: 0.75rem;
+        margin-bottom: 16px;
+    }
+
+    .dup-ok-btn {
+        padding: 9px 28px;
+        font-size: 0.8rem;
+    }
+
+    /* Confirm Dialog */
+    .confirm-modal {
+        padding: 20px 16px 16px;
+    }
+
+    .confirm-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 10px;
+    }
+
+    .confirm-title {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
+
+    .confirm-message {
+        font-size: 0.78rem;
+        margin-bottom: 16px;
+    }
+
+    .confirm-actions {
+        gap: 8px;
+    }
+
+    /* Form controls */
+    .form-control {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+        color: #fff !important;
+        background-color: var(--surface2);
+    }
+
+    /* Flex-between in modals */
+    .flex-between {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+
+    .flex-between > div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .flex-between input,
+    .flex-between select,
+    .flex-between button {
+        width: 100%;
+        margin: 0 !important;
+        font-size: 0.8rem;
+    }
+
+    /* Search input */
+    .search-input {
+        font-size: 0.78rem;
+        padding: 6px 10px;
+    }
+
+    /* Analytics modal */
+    .analytics-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .analytics-box {
+        padding: 12px;
+    }
+
+    .stat-num {
+        font-size: 1.2rem;
+    }
+
+    .stat-lbl {
+        font-size: 0.6rem;
+    }
+
+    /* Record count & small labels */
+    #record-count,
+    .table-actions-right span {
+        font-size: 0.68rem;
+    }
+
+    /* Toast */
+    .toast {
+        font-size: 0.75rem;
+        padding: 8px 16px;
+        bottom: 14px;
+        max-width: 92vw;
+    }
+}
+
+/* ── Medium Mobile: 481px – 767px ─────────────────────── */
+@media (min-width: 481px) and (max-width: 767px) {
+
+    body {
+        font-size: 14px;
+    }
+
+    .brand-icon {
+        width: 34px;
+        height: 34px;
+    }
+
+    .brand-text h1 {
+        font-size: 1rem;
+    }
+
+    .brand-text p {
+        font-size: 0.7rem;
+    }
+
+    .btn {
+        font-size: 0.82rem;
+        padding: 9px 14px;
+    }
+
+    .card-header {
+        padding: 10px 14px;
+    }
+
+    .card-title {
+        font-size: 0.78rem;
+    }
+
+    .card-body {
+        padding: 12px 14px;
+    }
+
+    .stat-box .num {
+        font-size: 1.3rem;
+    }
+
+    .stat-box .lbl {
+        font-size: 0.6rem;
+    }
+
+    th {
+        padding: 8px 10px;
+        font-size: 0.62rem;
+    }
+
+    td {
+        padding: 8px 10px;
+        font-size: 0.78rem;
+    }
+
+    .modal-header h3 {
+        font-size: 0.95rem;
+    }
+
+    .modal-body {
+        padding: 14px 16px;
+    }
+
+    .sm-table {
+        font-size: 1.9rem;
+    }
+
+    .sm-name {
+        font-size: 1.15rem;
+    }
+
+    .sm-meta {
+        font-size: 0.78rem;
+    }
+
+    .scan-icon {
+        width: 72px;
+        height: 72px;
+        font-size: 2rem;
+    }
+
+    .confirm-title {
+        font-size: 1.2rem;
+    }
+
+    .dup-name {
+        font-size: 1.35rem;
+    }
+}
+
+/* ── Tablet: 768px – 991px ─────────────────────────────── */
+@media (min-width: 768px) and (max-width: 991px) {
+
+    .brand-text h1 {
+        font-size: 1.3rem;
+    }
+
+    .brand-text p {
+        font-size: 0.72rem;
+    }
+
+    .brand-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .btn {
+        font-size: 0.84rem;
+        padding: 9px 16px;
+    }
+
+    .stat-box .num {
+        font-size: 1.5rem;
+    }
+
+    th {
+        padding: 10px 14px;
+        font-size: 0.68rem;
+    }
+
+    td {
+        padding: 10px 14px;
+        font-size: 0.82rem;
+    }
+}
